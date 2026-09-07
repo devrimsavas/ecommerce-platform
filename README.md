@@ -1,73 +1,99 @@
+# SnapShop — E-Commerce Platform
 
-# SNAPSHOP E-Commercial App 
+A full-stack e-commerce application simulating admin, registered user, and guest roles, built as two separate Express/EJS applications: a backend API with an embedded storefront, and a dedicated admin panel frontend.
 
-**Very important note please read**: 
-To ensure the proper functioning of the Admin Panel in the FRONT-END section, it is crucial to configure the token secrets consistently across both folders. This configuration is essential for the smooth operation of the front-end admin panel.
-- after you have installed npm module
-```bash 
-npm install 
-```
-generate a token secret using Node's crypto module:
-```bash 
-require('crypto').randomBytes(64).toString('hex')
-```
-and add this `generated_token_secret`for both env module in front and back-end env files. 
+## ⚠️ Setup Note
 
-# Node version 
-This application uses node version v20.10.0. Please check your node version using in command line:
-```bash 
-node --version
+To ensure the Admin Panel works correctly, the JWT token secret must be configured **identically in both** the `BACK-END` and `FRONT-END` `.env` files. Generate one with Node's crypto module:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
+Requires **Node.js v20.10.0** or higher (`node --version` to check).
 
-# Application and Folder Structure 
-The purpose of this application is to imitate the roles of admin, user and visitor on a fictitious e-commerce site and to provide options according to the user's role. However, basically the Admin role is prioritized. Admin can add, delete, update or delete products. Likewise, an admin can update their order status.
+## 🚀 Features
 
-# Folder Structure 
-The repository here mainly consist of three sections 
-- 1 BACK-END
-- 2 FRONT-END 
-- 3 DOCUMENTATION
+- **Role-based access**: Admin, registered user, and guest, each with different permissions
+- **Admin capabilities**: add, update, and delete products, brands, and categories; manage users; update order status
+- **Product catalog**: products organized by brand and category, with search
+- **Shopping cart & orders**: cart items, order creation, and order-item tracking
+- **Authentication**: JWT-based, with `bcrypt` password hashing
+- **API documentation**: auto-generated Swagger docs (`swagger-autogen`), served at `/doc`
+- **Automated tests**: Jest + Supertest covering login and product/category flows
 
-## 1- BACK-END Folder Overview 
-This folder contains the back-end application of the NOROFF E-Commercial App, primarily serving the admin and user response APIs. Key components and features of this folder include:
-* API Services: Admin, User and Guest APIs 
+## 🛠 Tech Stack
 
-* Testing and Swagger Modules: Jest Supertest and Swagger modules. (note: swagger module is located at http://localhost:3000/doc/ (in case you directly want to see all API's).
+**Backend:** Node.js, Express, EJS, Sequelize (ORM), MySQL, JWT, bcrypt, Swagger (swagger-autogen + swagger-ui-express), Jest + Supertest
+**Frontend (Admin Panel):** Node.js, Express, EJS, Axios (consumes the backend API), JWT
 
-* Embedded Front-End: the Back-End folder has its own front-end view in case the user want also use app here. 
+## 📂 Folder Structure
 
-* Port Configuration: The application runs on port 3000 (be sure you have installed CORS).
+The repository is split into three top-level sections:
 
-Documentation: For detailed information and usage guidelines, please refer `README.md` file inside BACK-END folder and documentation folder. 
+```
+ecommerce-platform/
+├── BACK-END/           # API + embedded storefront (port 3000)
+│   ├── controllers/     # Brand, Cart, Category, Order, Product, Search, User
+│   ├── models/          # Sequelize models: Product, Cart, CartItem, Order, OrderItem, Brand, Category, User, MembershipStatus
+│   ├── routes/          # admin, auth, brand, cart, category, guest, order, products, registeredUsers, search, user
+│   ├── middlewares/      # Auth (JWT verification, role-based authorize)
+│   ├── tests/            # login.test.js, product_category.test.js
+│   └── views/             # Embedded EJS storefront views
+├── FRONT-END/            # Standalone Admin Panel (port 5000)
+│   ├── views/              # adminPanel, adminlogin, allusers, brands, categories, orders
+│   └── routes/             # admin, index
+└── DOCUMENTATION/        # Reflection report and project notes
+```
 
-## 2- FRONT-END Folder Overview 
-This folder contains the front-end Admin Panel application of the Noroff E-Commercial App, although the primary target is to provide a seperated front-end for users, it is possible to use back-end views via ports and links given in index.page. 
+### 1. BACK-END
+Serves the Admin, User, and Guest APIs. Also includes its own embedded front-end views for direct use without the separate Admin Panel. API documentation is available via Swagger at `http://localhost:3000/doc`. Requires CORS to be enabled for cross-origin requests from the Admin Panel.
 
-Documentation: For detailed information and usage guidelines, please refer `README.md` file inside FRONT-END folder and documentation folder.
-* The application in this folder cannot be run alone. The app in the back-end folder must be run in the background.
+### 2. FRONT-END
+A standalone Admin Panel application that consumes the backend API via Axios. **Cannot run independently** — the backend must be running in the background. Runs on port 5000.
 
-* Port Configuration: The application in this folder runs on port 5000
+### 3. DOCUMENTATION
+Contains the project's reflection report, database design notes, challenges encountered during development, and personal notes from the development process.
 
+## ▶️ Getting Started
 
-## 3- DOCUMENTATION 
-This folder contains documentation for whole application such as reflection report, database construction, challanges and problems during coding phase and some personal comments of the programmer. 
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/devrimsavas/ecommerce-platform.git
+   cd ecommerce-platform
+   ```
+2. **Install dependencies in both folders**
+   ```bash
+   cd BACK-END && npm install
+   cd ../FRONT-END && npm install
+   ```
+3. **Configure environment variables** — set up `.env` in both `BACK-END` and `FRONT-END` with the **same JWT token secret** (see Setup Note above), plus MySQL connection details in the backend
+4. **Run the backend** (from `BACK-END/`)
+   ```bash
+   npm start
+   ```
+5. **Run the frontend** (from `FRONT-END/`, in a separate terminal)
+   ```bash
+   npm start
+   ```
+6. **Explore the API** at `http://localhost:3000/doc` (Swagger UI)
 
+## 🧪 Testing
 
-## 4- REFERENCES 
-In this section, the external resources and materials used to create this application are listed. Additinally, how and what purpose these resources used are discussed in details in the **reflection report** in the DOCUMENTATION folder. 
+```bash
+cd BACK-END
+npm test
+```
+Runs the Jest + Supertest suite covering authentication and product/category endpoints.
 
+## 📚 References
 
-1.	Backend by Noroff. "Database Module Introduction." YouTube Video. Accessed for learning database fundamentals.
+Resources used during development are documented in detail in the reflection report (`DOCUMENTATION/Reflection_Report.pdf`), including:
 
-2.	ChatGPT, OpenAI. Assistance with database modeling, and idea generation for e-commerce project development.
-
-3.	Codeium Plugin. Used for code enhancement and error resolution during development.
-
-4.	LinkedIn Learning. "Programming Foundations: Databases - Relationship Rules and Referential Integrity" by Simon Allardice. Course Link. Accessed for understanding database relationships.
-
-5.	Noroff Learning Resources. T8CA25f1UKnb6Kt0X9xr. Accessed during the project for foundational learning.
-
-6.	Udemy. "Node.js, Express, MongoDB Bootcamp" by Jonas Schmedtmann. Course Link. Accessed for practical development skills in Node.js and MongoDB.
-
-7.	Vertabelo Blog. "ER Diagram for Online Shop." Article. Used as a reference for idea generation on commercial site structures.
+1. Backend by Noroff — "Database Module Introduction" (YouTube)
+2. ChatGPT (OpenAI) — assistance with database modeling and idea generation
+3. Codeium — code enhancement and error resolution
+4. LinkedIn Learning — "Programming Foundations: Databases" by Simon Allardice
+5. Noroff Learning Resources
+6. Udemy — "Node.js, Express, MongoDB Bootcamp" by Jonas Schmedtmann
+7. Vertabelo Blog — "ER Diagram for Online Shop"
